@@ -121,8 +121,6 @@ public class BinaryDeltaReader {
 
     ArrayList<Long> Apply() throws CorruptFileFormatException, IOException {
         EnsureMetadata();
-        long pair = 0;
-        long lastIndex = 0;
         while (buffer.hasRemaining()) {
             byte b = buffer.get();
 
@@ -131,14 +129,13 @@ public class BinaryDeltaReader {
             if (b == BinaryFormat.CopyCommand) {
                 long start = buffer.getLong();
                 long length = buffer.getLong();
-                // Log.d("OUD: ","Copy from " + start + " for " + length);
-                long numIndex ;
+                //System.out.println("Copy from " + start + " for " + length);
+                long numIndex;
                 if (length % chunkSize != 0) {
                     if (!buffer.hasRemaining()) numIndex = length / chunkSize;
-                    else numIndex = length / chunkSize -1 ;
-                }
-                else {
-                    numIndex = length / chunkSize -1;
+                    else numIndex = length / chunkSize - 1;
+                } else {
+                    numIndex = length / chunkSize - 1;
                 }
                 for (long i = 0; i < numIndex; i++) {
                     tokenArray.add(start + i * chunkSize);

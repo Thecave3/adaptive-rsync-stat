@@ -12,8 +12,9 @@ public class DeltaReader {
     private File deltaFile;
     private long chunkSize;
 
-    public DeltaReader(String deltaFilePath) {
-        deltaFile = new File(deltaFilePath);
+    public DeltaReader(String deltaFilePath, long chunkSize) {
+        this.deltaFile = new File(deltaFilePath);
+        this.chunkSize = chunkSize;
     }
 
     public ArrayList<Long> read() throws IOException, CorruptFileFormatException {

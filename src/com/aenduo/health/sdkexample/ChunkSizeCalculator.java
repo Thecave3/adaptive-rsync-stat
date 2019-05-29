@@ -44,20 +44,18 @@ public class ChunkSizeCalculator {
             }
         }
 
+        // TODO: 29/05/2019 chiedere ad Andrea che tocca fare
+        if (w == 0)
+            w++;
         return (int) wSum / w; // dt1 = final chunk estimate
     }
 
 
-    public static long[] extractTokenIndexVector(String deltaFilePath, int deltaChunkSize) throws IOException {
-        ArrayList<Long> tokenIndexVector = new ArrayList<>();
+    public static long[] extractTokenIndexVector(String deltaFilePath, int deltaChunkSize) throws IOException, CorruptFileFormatException {
+        ArrayList<Long> tokenIndexVector;
 
-        DeltaReader reader = new DeltaReader(deltaFilePath);
-        try {
-            tokenIndexVector = reader.read();
-        } catch (IOException | CorruptFileFormatException e) {
-            e.printStackTrace();
-        }
-
+        DeltaReader reader = new DeltaReader(deltaFilePath, deltaChunkSize);
+        tokenIndexVector = reader.read();
 
         long[] retArray = new long[tokenIndexVector.size()];
         int count = 0;
