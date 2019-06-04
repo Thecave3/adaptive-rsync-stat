@@ -22,12 +22,12 @@ public class Main {
     public static void main(String[] args) {
 
         int chunkSize = 2048;
-        String newFilePath = "C:\\Users\\gigi_\\Desktop\\files\\test1000\\file_";
+        String newFilePath = ".\\files\\file_";
         String signatureFilePath;
         String deltaFilePath;
-
+        double dataToSave;
         try {
-            /*
+
             frStd = new FileWriter(new File(STANDARD_CHUNK_SIZE_FILE_PATH));
 
             for (int i = 0; i < ITERATIONS - 1; i++) {
@@ -35,13 +35,17 @@ public class Main {
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
                 tempFilePath = newFilePath + (i + 1);
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
-                saveStandardData(i, new File(deltaFilePath).length());
+
+                dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                saveStandardData(i, dataToSave);
+                if (i % 100 == 0)
+                    System.out.println("STD: " + (i / 10) + "%");
             }
 
             frStd.close();
-            */
+
             frOpt = new FileWriter(new File(OPTIMIZE_CHUNK_SIZE_FILE_PATH));
-            newFilePath = "C:\\Users\\gigi_\\Desktop\\files\\test1000\\file_";
+            newFilePath = ".\\files\\file_";
 
             int lastChunkSize;
             for (int i = 0; i < ITERATIONS - 1; i++) {
@@ -62,7 +66,11 @@ public class Main {
                 tempFilePath = newFilePath + (i + 1);
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
 
-                saveOptimizeData(i, new File(deltaFilePath).length());
+                dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                saveOptimizeData(i, dataToSave);
+
+                if (i % 100 == 0)
+                    System.out.println("OPT: " + (i / 10) + "%");
             }
             frOpt.close();
         } catch (IOException | CorruptFileFormatException e) {
@@ -84,24 +92,28 @@ public class Main {
     }
 
     private static void launchOctodiff(String command, int i, String... param) throws IOException {
-        Process process;
-        process = new ProcessBuilder(OCTODIFF_PATH, command, param[0], param[1]).start();
-
-        while (process.isAlive()) {
-            continue;
-        }
-        if (process.exitValue() != 0) {
-            System.out.println("Exit value: " + process.exitValue() + ", iterazione " + i);
-            System.out.println(OCTODIFF_PATH + " " + command + " " + param[0] + " " + param[1]);
-
+        try {
+            Process process;
+            process = new ProcessBuilder(OCTODIFF_PATH, command, param[0], param[1]).start();
+            process.waitFor();
+            if (process.exitValue() != 0) {
+                System.out.println("Exit value: " + process.exitValue() + ", iterazione " + i);
+                System.out.println(OCTODIFF_PATH + " " + command + " " + param[0] + " " + param[1]);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private static void saveOptimizeData(int iteration, long sizeDelta) throws IOException {
-        frOpt.append(String.valueOf(((double) sizeDelta) / (double) 1000)).append(" ");
+    private static void saveOptimizeData(int iteration, double sizeDelta) throws IOException {
+        frOpt.append(String.valueOf(sizeDelta)).append(" ");
     }
 
-    private static void saveStandardData(int iteration, long sizeDelta) throws IOException {
-        frStd.append(String.valueOf(((double) sizeDelta) / (double) 1000)).append(" ");
+    private static void saveStandardData(int iteration, double sizeDelta) throws IOException {
+        frStd.append(String.valueOf(sizeDelta)).append(" ");
+    }
+
+    private static String convertToKB(double sizeDelta) {
+        return String.valueOf(sizeDelta / (double) 1000);
     }
 }
