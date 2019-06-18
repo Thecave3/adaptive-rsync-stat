@@ -1,10 +1,11 @@
 import random
 import string
 
+ITERATIONS = 100
 
 name = "file_"
 content = ''
-for x in range(0, 1000):
+for x in range(0, ITERATIONS):
     print('Creating file ' + name + str(x))
     file = open(name + str(x), 'w')
     if (x == 0):
@@ -18,6 +19,7 @@ for x in range(0, 1000):
             randomString += random.choice(string.ascii_letters)
         last = open(name + str(x - 1), 'r')
         content = last.read()
+        '''
         for x in range(0, 500):
             index = random.randint(0, 700000)
             content = content[:index] + randomString + content[index + 1:]
@@ -26,6 +28,7 @@ for x in range(0, 1000):
             index = random.randint(0, 699900)
             content = content[:index] + content[index + 100:]
         print('Tolte parti random per 500 volte')
+        '''
         file.write(content)
         last.close()
         file.close()

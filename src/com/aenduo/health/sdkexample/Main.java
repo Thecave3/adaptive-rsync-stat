@@ -12,8 +12,8 @@ import static com.aenduo.health.sdkexample.ChunkSizeCalculator.extractTokenIndex
 public class Main {
 
     private final static String STANDARD_CHUNK_SIZE_FILE_PATH = "standard.txt";
-    private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized.txt";
-    private final static int ITERATIONS = 1000;
+    private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized_new.txt";
+    private final static int ITERATIONS = 100;
     private final static String OCTODIFF_PATH = "octodiff";
     private final static String SIGNATURE_PARAM = "signature";
     private final static String DELTA_PARAM = "delta";
@@ -27,7 +27,7 @@ public class Main {
         String deltaFilePath;
         double dataToSave;
         try {
-
+            /*
             frStd = new FileWriter(new File(STANDARD_CHUNK_SIZE_FILE_PATH));
 
             for (int i = 0; i < ITERATIONS - 1; i++) {
@@ -38,12 +38,12 @@ public class Main {
 
                 dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
                 saveStandardData(i, dataToSave);
-                if (i % 100 == 0)
-                    System.out.println("STD: " + (i / 10) + "%");
+                if (i % 10 == 0)
+                    System.out.println("STD: " + (i) + "%");
             }
 
             frStd.close();
-
+            */
             frOpt = new FileWriter(new File(OPTIMIZE_CHUNK_SIZE_FILE_PATH));
             newFilePath = ".\\files\\file_";
 
@@ -57,20 +57,18 @@ public class Main {
                 tempFilePath = newFilePath + i;
 
                 lastChunkSize = adaptiveChunkSizeCalculator(chunkSize, extractTokenIndexVector(deltaFilePath, chunkSize), 0.5);
-                if (lastChunkSize != 0)
-                    chunkSize = lastChunkSize;
-
-                //System.out.println(chunkSize);
+                System.out.println(chunkSize);
 
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
                 tempFilePath = newFilePath + (i + 1);
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
 
-                dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                dataToSave = lastChunkSize;
                 saveOptimizeData(i, dataToSave);
 
-                if (i % 100 == 0)
-                    System.out.println("OPT: " + (i / 10) + "%");
+                if (i % 10 == 0)
+                    System.out.println("OPT: " + i + "%");
             }
             frOpt.close();
         } catch (IOException | CorruptFileFormatException e) {

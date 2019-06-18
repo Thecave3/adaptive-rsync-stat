@@ -30,7 +30,8 @@ public class ChunkSizeCalculator {
             fii = pt[m] - pt[i]; // Token difference
             if (fii == dt) {
                 nac++;
-            } else {
+            }
+            else {
                 if (nac > 0) {
                     w++;
                     dt1w = dt + mu * nac;
@@ -43,10 +44,11 @@ public class ChunkSizeCalculator {
                 wSum += dt1w;
             }
         }
-
-        // TODO: 29/05/2019 chiedere ad Andrea che tocca fare
-        if (w == 0)
-            w++;
+        if (nac > 0 && w == 0) {
+            //help
+        }
+        else if (nac == 0 && w == 0)
+            return dt;
         return (int) wSum / w; // dt1 = final chunk estimate
     }
 
