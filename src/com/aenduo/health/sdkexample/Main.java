@@ -1,23 +1,26 @@
 package com.aenduo.health.sdkexample;
 
 import com.aenduo.health.sdkexample.errors.CorruptFileFormatException;
+import jdk.nashorn.internal.codegen.FieldObjectCreator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 import static com.aenduo.health.sdkexample.ChunkSizeCalculator.adaptiveChunkSizeCalculator;
 import static com.aenduo.health.sdkexample.ChunkSizeCalculator.extractTokenIndexVector;
 
 public class Main {
 
-    private final static String STANDARD_CHUNK_SIZE_FILE_PATH = "standard.txt";
-    private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized.txt";
-    private final static int ITERATIONS = 1000;
+    private final static String STANDARD_DELTA_SIZE_FILE_PATH = "standard_delta.txt";
+    private final static String OPTIMIZE_DELTA_SIZE_FILE_PATH = "optimized_delta.txt";
+    private final static String STANDARD_CHUNK_SIZE_FILE_PATH = "standard_chnk.txt";
+    private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized_chnk.txt";
+    private final static String EFF_FILE_PATH = "efficiency.txt";
+    private final static int ITERATIONS = 24;
     private final static String OCTODIFF_PATH = "octodiff";
     private final static String SIGNATURE_PARAM = "signature";
     private final static String DELTA_PARAM = "delta";
-    private static FileWriter frOpt, frStd;
+    private static FileWriter fwOpt, fwStd, fwChnkOpt, fwChnkStd, fwEff;
 
     public static void main(String[] args) {
 
@@ -27,52 +30,75 @@ public class Main {
         String deltaFilePath;
         double dataToSave;
         try {
-
-            frStd = new FileWriter(new File(STANDARD_CHUNK_SIZE_FILE_PATH));
+            fwStd = new FileWriter(new File(STANDARD_DELTA_SIZE_FILE_PATH));
+            fwChnkStd = new FileWriter(new File(STANDARD_CHUNK_SIZE_FILE_PATH));
 
             for (int i = 0; i < ITERATIONS - 1; i++) {
-                String tempFilePath = newFilePath + i;
+                String tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
-
-                dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                dataToSave = (double) new File(deltaFilePath).length();
                 saveStandardData(i, dataToSave);
-                if (i % 100 == 0)
-                    System.out.println("STD: " + (i / 10) + "%");
+                saveStandardChunkData(i, chunkSize);
+
+                //if (i % (ITERATIONS / 10) == 0)
+                //    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
             }
 
-            frStd.close();
+            fwChnkStd.close();
+            fwStd.close();
 
-            frOpt = new FileWriter(new File(OPTIMIZE_CHUNK_SIZE_FILE_PATH));
+            fwOpt = new FileWriter(new File(OPTIMIZE_DELTA_SIZE_FILE_PATH));
+            fwChnkOpt = new FileWriter(new File(OPTIMIZE_CHUNK_SIZE_FILE_PATH));
             newFilePath = ".\\files\\file_";
 
             int lastChunkSize;
             for (int i = 0; i < ITERATIONS - 1; i++) {
-                String tempFilePath = newFilePath + i;
+                String tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
-
-                tempFilePath = newFilePath + i;
 
                 lastChunkSize = adaptiveChunkSizeCalculator(chunkSize, extractTokenIndexVector(deltaFilePath, chunkSize), 0.5);
-                if (lastChunkSize != 0)
-                    chunkSize = lastChunkSize;
-
                 //System.out.println(chunkSize);
+                chunkSize = lastChunkSize;
 
+                tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
 
-                dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
+                dataToSave = (double) new File(deltaFilePath).length();
                 saveOptimizeData(i, dataToSave);
+                saveOptimizeChunkData(i, chunkSize);
 
-                if (i % 100 == 0)
-                    System.out.println("OPT: " + (i / 10) + "%");
+                //if (i % (ITERATIONS / 10) == 0)
+                //    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
             }
-            frOpt.close();
+
+            fwChnkOpt.close();
+            fwOpt.close();
+
+            System.out.println("Generating efficiency file");
+            fwEff = new FileWriter(new File(EFF_FILE_PATH));
+            Scanner frStdDelta = new Scanner(new File(STANDARD_DELTA_SIZE_FILE_PATH));
+            Scanner frOptDelta = new Scanner(new File(OPTIMIZE_DELTA_SIZE_FILE_PATH));
+
+            frStdDelta.useDelimiter(" ");
+            frOptDelta.useDelimiter(" ");
+
+            double standard, optimized;
+            for (int i = 0; i < ITERATIONS && frOptDelta.hasNext() && frStdDelta.hasNext(); i++) {
+                standard = Double.valueOf(frStdDelta.next());
+                optimized = Double.valueOf(frOptDelta.next());
+                fwEff.append(String.valueOf(optimized / standard)).append(" ");
+            }
+
+            fwEff.close();
+
         } catch (IOException | CorruptFileFormatException e) {
             e.printStackTrace();
         }
@@ -105,12 +131,21 @@ public class Main {
         }
     }
 
+    private static void saveOptimizeChunkData(int iteration, int chunkSize) throws IOException {
+        fwChnkOpt.append(String.valueOf(chunkSize)).append(" ");
+    }
+
     private static void saveOptimizeData(int iteration, double sizeDelta) throws IOException {
-        frOpt.append(String.valueOf(sizeDelta)).append(" ");
+        fwOpt.append(String.valueOf(sizeDelta)).append(" ");
+    }
+
+
+    private static void saveStandardChunkData(int iteration, int chunkSize) throws IOException {
+        fwChnkStd.append(String.valueOf(chunkSize)).append(" ");
     }
 
     private static void saveStandardData(int iteration, double sizeDelta) throws IOException {
-        frStd.append(String.valueOf(sizeDelta)).append(" ");
+        fwStd.append(String.valueOf(sizeDelta)).append(" ");
     }
 
     private static String convertToKB(double sizeDelta) {

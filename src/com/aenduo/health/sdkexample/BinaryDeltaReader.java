@@ -153,6 +153,7 @@ public class BinaryDeltaReader {
                 // Log.d(TAG, "Apply: Command not detected");
             }
         }
+        //System.out.println(tokenArray);
         return tokenArray;
     }
 }
