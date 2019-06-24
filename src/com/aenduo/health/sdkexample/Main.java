@@ -1,7 +1,6 @@
 package com.aenduo.health.sdkexample;
 
 import com.aenduo.health.sdkexample.errors.CorruptFileFormatException;
-import jdk.nashorn.internal.codegen.FieldObjectCreator;
 
 import java.io.*;
 import java.util.Scanner;
@@ -40,8 +39,8 @@ public class Main {
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
                 //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
                 dataToSave = (double) new File(deltaFilePath).length();
-                saveStandardData(i, dataToSave);
-                saveStandardChunkData(i, chunkSize);
+                saveStandardData(dataToSave);
+                saveStandardChunkData(chunkSize);
 
                 //if (i % (ITERATIONS / 10) == 0)
                 //    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
@@ -72,8 +71,8 @@ public class Main {
 
                 //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
                 dataToSave = (double) new File(deltaFilePath).length();
-                saveOptimizeData(i, dataToSave);
-                saveOptimizeChunkData(i, chunkSize);
+                saveOptimizeData(dataToSave);
+                saveOptimizeChunkData(chunkSize);
 
                 //if (i % (ITERATIONS / 10) == 0)
                 //    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
@@ -131,20 +130,20 @@ public class Main {
         }
     }
 
-    private static void saveOptimizeChunkData(int iteration, int chunkSize) throws IOException {
+    private static void saveOptimizeChunkData(int chunkSize) throws IOException {
         fwChnkOpt.append(String.valueOf(chunkSize)).append(" ");
     }
 
-    private static void saveOptimizeData(int iteration, double sizeDelta) throws IOException {
+    private static void saveOptimizeData(double sizeDelta) throws IOException {
         fwOpt.append(String.valueOf(sizeDelta)).append(" ");
     }
 
 
-    private static void saveStandardChunkData(int iteration, int chunkSize) throws IOException {
+    private static void saveStandardChunkData(int chunkSize) throws IOException {
         fwChnkStd.append(String.valueOf(chunkSize)).append(" ");
     }
 
-    private static void saveStandardData(int iteration, double sizeDelta) throws IOException {
+    private static void saveStandardData(double sizeDelta) throws IOException {
         fwStd.append(String.valueOf(sizeDelta)).append(" ");
     }
 
