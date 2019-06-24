@@ -16,7 +16,7 @@ public class Main {
     private final static String STANDARD_CHUNK_SIZE_FILE_PATH = "standard_chnk.txt";
     private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized_chnk.txt";
     private final static String EFF_FILE_PATH = "efficiency.txt";
-    private final static int ITERATIONS = 100;
+    private final static int ITERATIONS = 24;
     private final static String OCTODIFF_PATH = "octodiff";
     private final static String SIGNATURE_PARAM = "signature";
     private final static String DELTA_PARAM = "delta";
@@ -34,17 +34,17 @@ public class Main {
             fwChnkStd = new FileWriter(new File(STANDARD_CHUNK_SIZE_FILE_PATH));
 
             for (int i = 0; i < ITERATIONS - 1; i++) {
-                String tempFilePath = newFilePath + i;
+                String tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
                 //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
                 dataToSave = (double) new File(deltaFilePath).length();
                 saveStandardData(i, dataToSave);
                 saveStandardChunkData(i, chunkSize);
 
-                if (i % (ITERATIONS / 10) == 0)
-                    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
+                //if (i % (ITERATIONS / 10) == 0)
+                //    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
             }
 
             fwChnkStd.close();
@@ -56,18 +56,18 @@ public class Main {
 
             int lastChunkSize;
             for (int i = 0; i < ITERATIONS - 1; i++) {
-                String tempFilePath = newFilePath + i;
+                String tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
 
                 lastChunkSize = adaptiveChunkSizeCalculator(chunkSize, extractTokenIndexVector(deltaFilePath, chunkSize), 0.5);
                 //System.out.println(chunkSize);
                 chunkSize = lastChunkSize;
 
-                tempFilePath = newFilePath + i;
+                tempFilePath = newFilePath + i + ".edf";
                 signatureFilePath = createSignatureFromFile(tempFilePath, chunkSize, i);
-                tempFilePath = newFilePath + (i + 1);
+                tempFilePath = newFilePath + (i + 1) + ".edf";
                 deltaFilePath = createDeltaFromFile(signatureFilePath, tempFilePath, i);
 
                 //dataToSave = (double) new File(deltaFilePath).length() / (double) new File(tempFilePath).length();
@@ -75,8 +75,8 @@ public class Main {
                 saveOptimizeData(i, dataToSave);
                 saveOptimizeChunkData(i, chunkSize);
 
-                if (i % (ITERATIONS / 10) == 0)
-                    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
+                //if (i % (ITERATIONS / 10) == 0)
+                //    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
             }
 
             fwChnkOpt.close();
