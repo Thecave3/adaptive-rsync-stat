@@ -15,7 +15,7 @@ public class Main {
     private final static String STANDARD_CHUNK_SIZE_FILE_PATH = "standard_chnk.txt";
     private final static String OPTIMIZE_CHUNK_SIZE_FILE_PATH = "optimized_chnk.txt";
     private final static String EFF_FILE_PATH = "efficiency.txt";
-    private final static int ITERATIONS = 24;
+    private final static int ITERATIONS = 1000;
     private final static String OCTODIFF_PATH = "octodiff";
     private final static String SIGNATURE_PARAM = "signature";
     private final static String DELTA_PARAM = "delta";
@@ -42,8 +42,8 @@ public class Main {
                 saveStandardData(dataToSave);
                 saveStandardChunkData(chunkSize);
 
-                //if (i % (ITERATIONS / 10) == 0)
-                //    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
+                if (i % (ITERATIONS / 10) == 0)
+                    System.out.println("STD: " + (i / (ITERATIONS / 100)) + "%");
             }
 
             fwChnkStd.close();
@@ -74,8 +74,8 @@ public class Main {
                 saveOptimizeData(dataToSave);
                 saveOptimizeChunkData(chunkSize);
 
-                //if (i % (ITERATIONS / 10) == 0)
-                //    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
+                if (i % (ITERATIONS / 10) == 0)
+                    System.out.println("OPT: " + (i / (ITERATIONS / 100)) + "%");
             }
 
             fwChnkOpt.close();

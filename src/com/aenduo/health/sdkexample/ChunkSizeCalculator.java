@@ -27,6 +27,8 @@ public class ChunkSizeCalculator {
         double dt1w;
         long fii;
 
+        //if(pt.length == 0) return checkBounds(dt - dt/10,dt);
+
         for (int m = 1, i, nud; m < M; m++) {
             i = m - 1;
             fii = pt[m] - pt[i]; // Token difference
@@ -46,7 +48,7 @@ public class ChunkSizeCalculator {
             }
         }
         if (nac == 0 && w == 0) {
-            return dt;
+            return checkBounds(dt,dt);
         }
         if (w == 0)
             w++;
@@ -64,8 +66,8 @@ public class ChunkSizeCalculator {
             return OCTODIFF_MAX_CHUNK_SIZE;
         else if (chunkSize < OCTODIFF_MIN_CHUNK_SIZE && chunkSize != 0)
             return OCTODIFF_MIN_CHUNK_SIZE;
-        else if (chunkSize == 0)
-            return oldChunkSize;
+        else if (chunkSize == 0 || chunkSize == oldChunkSize)
+            return checkBounds(oldChunkSize - oldChunkSize/10,oldChunkSize);
         else
             return chunkSize;
     }
