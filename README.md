@@ -1,4 +1,6 @@
-# AdaptiveStatisticCalculator
+# Exploiting Edge Computing for Adaptive Data Update in Internet of Things Networks
+
+## AdaptiveStatisticCalculator
 
 <img align="left" src="https://www.uniroma1.it/sites/default/files/images/logo/sapienza-big.png"/>
 <img align="right" src="./img/aml.png"/>
